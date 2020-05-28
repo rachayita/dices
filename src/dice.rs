@@ -6,7 +6,7 @@ use rand::rngs::OsRng;
 use regex::Regex;
 
 lazy_static! {
-    pub static ref DICE_CMD_PATTERN: Regex = Regex::new(r"\d(d\d+)?").unwrap();
+    pub static ref DICE_CMD_PATTERN: Regex = Regex::new(r"\d+(d\d+)?").unwrap();
 }
 
 /// Describes a set of dice that can be rolled all at once, i.e. 2d6
