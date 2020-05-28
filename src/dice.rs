@@ -28,6 +28,10 @@ impl Dice {
                 .collect(),
         )
     }
+
+    pub fn gen_from_fn<F: FnMut(u32) -> u32>(&self, mut f: F) -> DiceResult {
+        DiceResult((0..self.count).map(|_| f(self.range)).collect())
+    }
 }
 
 impl ::std::str::FromStr for Dice {
