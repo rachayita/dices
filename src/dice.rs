@@ -29,6 +29,10 @@ impl Dice {
         )
     }
 
+    pub fn generator_result<G: DiceResultGenerator>(&self, drg: &mut G) -> DiceResult {
+        drg.gen_result(&self)
+    }
+
     pub fn gen_from_fn<F: FnMut(u32) -> u32>(&self, mut f: F) -> DiceResult {
         DiceResult((0..self.count).map(|_| f(self.range)).collect())
     }
@@ -70,6 +74,20 @@ impl std::fmt::Display for DiceResult {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         let as_string: Vec<_> = self.0.iter().map(|v| v.to_string()).collect();
         write!(f, "{} ({})", as_string.join(","), self.total())
+    }
+}
+
+pub trait DiceResultGenerator {
+    fn gen_result(&mut self, dice: &Dice) -> DiceResult;
+}
+
+impl<T: rand::Rng> DiceResultGenerator for T {
+    fn gen_result(&mut self, dice: &Dice) -> DiceResult {
+        DiceResult(
+            (0..dice.count)
+                .map(|_| self.gen_range(0, dice.range) + 1)
+                .collect(),
+        )
     }
 }
 
