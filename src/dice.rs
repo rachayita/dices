@@ -1,6 +1,8 @@
 extern crate lazy_static;
 extern crate regex;
 use lazy_static::*;
+use rand::prelude::*;
+use rand::rngs::OsRng;
 use regex::Regex;
 
 lazy_static! {
@@ -17,6 +19,14 @@ pub struct Dice {
 impl Dice {
     pub fn new(count: u32, range: u32) -> Self {
         Self { count, range }
+    }
+
+    pub fn gen_result(&self) -> DiceResult {
+        DiceResult(
+            (0..self.count)
+                .map(|_| OsRng.gen_range(0, self.range) + 1)
+                .collect(),
+        )
     }
 }
 
@@ -37,6 +47,25 @@ impl ::std::str::FromStr for Dice {
                 exp: InvalidExpression,
             }),
         }
+    }
+}
+
+pub struct DiceResult(Vec<u32>);
+
+impl DiceResult {
+    pub fn new(v: Vec<u32>) -> Self {
+        Self(v)
+    }
+
+    pub fn total(&self) -> u32 {
+        self.0.iter().sum()
+    }
+}
+
+impl std::fmt::Display for DiceResult {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        let as_string: Vec<_> = self.0.iter().map(|v| v.to_string()).collect();
+        write!(f, "{} ({})", as_string.join(","), self.total())
     }
 }
 
